@@ -1,7 +1,5 @@
 # FLADDPS (Federated Learning Anomaly Detection Data Pipline System)
 
-
-## Task 1:
 ### 1. Getting started
 
 1. Clone the project:
@@ -63,11 +61,9 @@
     
 
 
-### In order to know how to modify the data pipeline, you can change some part of the code and see its effect.
-
 #### 1. Make the system run for a longer time:
 
-- The code (from task 1) runs only for 3 rounds, 2 epochs, increse it to 10 rounds, 3 epochs to have sufficent rounds for training.
+- The code runs only for 3 rounds, 2 epochs, increse it to 10 rounds, 3 epochs to have sufficent rounds for training.
 - Edit the `.env` file, set `FED_CONFIG_R=10` and `FED_CONFIG_E=3` and the save it.
 
 #### 2. Increase the number of samples produced by datasources.
@@ -100,5 +96,3 @@
     ```
     python3 live_plots.py
     ```
-
-### Now you should know how the Datapipeline works and how to change some parts of the code. You can continue with task 2 and 3.
