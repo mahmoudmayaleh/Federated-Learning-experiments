@@ -4,11 +4,11 @@ This module contains the reference implementation used to benchmark standard fed
 
 ## Contents
 
-- `client.py`, `client_manager.py`, `strategy.py` – core Flower client and strategy implementations.
-- `run_server.py`, `run_client.py`, `run_clients_auto.py` – scripts to start the coordinator and simulated clients.
-- `generate_data.py`, `distributed_data/` – helpers for creating and storing non-IID client splits.
-- `compare_*.py`, `analyze_results.py`, `results_visualizer.py` – analysis scripts for benchmarking different hyperparameters.
-- `baseline_results/`, `baseline_figures/` – storage for metrics and visualisations produced by the analysis scripts.
+- `client.py`, `client_manager.py`, `strategy.py` â€“ core Flower client and strategy implementations.
+- `run_server.py`, `run_client.py`, `run_clients_auto.py` â€“ scripts to start the coordinator and simulated clients.
+- `generate_data.py`, `distributed_data/` â€“ helpers for creating and storing non-IID client splits.
+- `compare_*.py`, `analyze_results.py`, `results_visualizer.py` â€“ analysis scripts for benchmarking different hyperparameters.
+- `baseline_results/`, `baseline_figures/` â€“ storage for metrics and visualisations produced by the analysis scripts.
 
 ## Usage
 
@@ -23,8 +23,3 @@ This module contains the reference implementation used to benchmark standard fed
    python run_client.py --cid 0
    ```
 4. After training completes, run any of the comparison scripts to produce figures in `baseline_figures/`.
-
-## Notes
-
-- Update the output directories in the scripts if you prefer to collect artefacts elsewhere.
-- The default dataset location resolves relative to this folder, so the module can be relocated without code changes.
