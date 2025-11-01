@@ -1,0 +1,11 @@
+flwr
+numpy
+pandas
+matplotlib
+prettytable
+dataframe-image
+torch
+torchvision
+scikit-learn
+tabulate
+seaborn

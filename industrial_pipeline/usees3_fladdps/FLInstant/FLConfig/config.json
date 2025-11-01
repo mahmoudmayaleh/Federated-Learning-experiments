@@ -1,0 +1,71 @@
+{
+  "network": {
+    "url": "10.20.1.10",
+    "url_": "[::]",
+    "port":3444
+  },
+
+    "clients":{
+  	"flclient_1":"root@flclient_1:/in_network_federaed_learning_for_anomaly_detection/FLClients/Output/Models/client/current_global_model.h5",
+  	"flclient_2":"root@flclient_2:/in_network_federaed_learning_for_anomaly_detection/FLClients/Output/Models/client/current_global_model.h5",
+  	"flclient_3":"root@flclient_3:/in_network_federaed_learning_for_anomaly_detection/FLClients/Output/Models/client/current_global_model.h5",
+        "flinference_1":"root@flinference_1:/in_network_federaed_learning_for_anomaly_detection/FLClients/Output/Models/client/current_global_model.h5",
+  	"flinference_2":"root@flinference_2:/in_network_federaed_learning_for_anomaly_detection/FLClients/Output/Models/client/current_global_model.h5",
+  	"flinference_3":"root@flinference_3:/in_network_federaed_learning_for_anomaly_detection/FLClients/Output/Models/client/current_global_model.h5"
+  },
+
+  "COMMENTS_": "setting can be NONE, ROUND, BATCH, TIME, SAMPLE: select what's dependable ",
+  "setting": "ROUND",
+  "global_config":{"seed": 5959, "device": "cpu"},
+  "fed_config": {"C": 1, "K": 3, "R":25, "E": 3, "B": 64,"M":"scaffold"},
+  "optim_config": {"lr": 0.01, "momentum": 0.9, "optim": "ADAM"},
+  "dataset_shape":{"no_samples": 1000, "feature_size" : 26},
+
+
+"running_mode":{
+		"mode": "batch",
+		"batch_size":50
+		},
+
+"physical_data_shape":{
+	"cpu": 26,
+        "memory": 11,
+        "network": 0,
+        "disk": 0
+	},   
+
+"container_data_shape":{
+	"cpu":0,
+	"memory":0,
+ 	"network":0,
+	"disk":0
+	},   
+
+"quantile":0.999,
+
+"rsc_target":"cpu",
+
+"layer":"physical",
+
+"data_splits_count":1,
+
+"split_label":"day",
+
+
+"file_paths":{
+    "train_data_dir_path":"Datasets",
+    "test_data_dir_file" :"Datasets",
+    "train_data_splits_path" :"Datasets/db_splits",
+    "train_data_dir_path_container" :"Datasets",
+    "train_data_dir_path_physical" :"Datasets",
+    "output_dir_path" : "Output",
+    "model_dir_path" : "Output/Models",
+    "analysis_dir_path" : "Output/Analysis",
+    "stress_dir": ""
+
+},
+
+"test_data_percentage": 0.005
+
+}
+

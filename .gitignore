@@ -1,0 +1,23 @@
+# Python artefacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.env/
+.venv/
+venv/
+
+# Results that can be regenerated
+**/baseline_results/**
+**/baseline_figures/**
+**/strategy_results/**
+**/strategy_figures/**
+**/robustness_results/**
+**/attack_simulation_results/**
+
+# Misc
+.DS_Store
+*.swp
+*.log
+baseline_federated_training/data/\nbaseline_federated_training/distributed_data/

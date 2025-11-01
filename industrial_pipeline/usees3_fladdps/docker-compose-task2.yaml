@@ -1,0 +1,322 @@
+version: '3.8'
+
+services:
+  # DPS brokers and processors
+  indbf_1:
+    container_name: indbf_1
+    image: registrylab.roc.cnam.fr/goyban/fladdps/ndbf:2.13-3.9.0
+    env_file:
+      - .env
+    tty: true
+    volumes:
+      - ./NDBF/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_broker.sh", "1", "i"]
+    networks:
+      dps_network:
+        ipv4_address: ${KAFKA_MAIN_i_IP}
+
+  endbf_1:
+    container_name: endbf_1
+    image: registrylab.roc.cnam.fr/goyban/fladdps/ndbf:2.13-3.9.0
+    env_file:
+      - .env
+    tty: true
+    volumes:
+      - ./NDBF/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_broker.sh", "1", "e"]
+    networks:
+      dps_network:
+        ipv4_address: ${KAFKA_MAIN_e_IP}
+
+  ndppf_1:
+    container_name: ndppf_1
+    build: 
+      context: .
+      dockerfile: ./NDPPF/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - endbf_1
+      - indbf_1
+    volumes:
+      - ./NDPPF/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_ndppf.sh", "1"]
+    networks:
+      dps_network:
+        ipv4_address: ${NDPPF_1_IP}
+
+  # Clients
+  flclient_1:
+    container_name: flclient_1
+    build: 
+      context: .
+      dockerfile: ./FLInstant/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flserver
+      - ndppf_1
+    volumes:
+      - ./FLInstant/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+      - ./Output/flclient_1:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical
+    command: ["bash", "/app/confs/run_client.sh", "1"]
+    networks:
+      server_client_network:
+        ipv4_address: ${CLIENT_1_SERVER_IP}
+      dps_network:
+        ipv4_address: ${CLIENT_1_DATASOURCE_IP}
+
+  flclient_2:
+    container_name: flclient_2
+    build: 
+      context: .
+      dockerfile: ./FLInstant/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flserver
+      - ndppf_1
+    volumes:
+      - ./FLInstant/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+      - ./Output/flclient_2:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical
+    command: ["bash", "/app/confs/run_client.sh", "2"]
+    networks:
+      server_client_network:
+        ipv4_address: ${CLIENT_2_SERVER_IP}
+      dps_network:
+        ipv4_address: ${CLIENT_2_DATASOURCE_IP}
+
+  flclient_3:
+    container_name: flclient_3
+    build: 
+      context: .
+      dockerfile: ./FLInstant/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flserver
+      - ndppf_1
+    volumes:
+      - ./FLInstant/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+      - ./Output/flclient_3:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical
+    command: ["bash", "/app/confs/run_client.sh", "3"]
+    networks:
+      server_client_network:
+        ipv4_address: ${CLIENT_3_SERVER_IP}
+      dps_network:
+        ipv4_address: ${CLIENT_3_DATASOURCE_IP}
+
+  # Flinference services
+  flinference_1:
+    container_name: flinference_1
+    build:
+      context: .
+      dockerfile: ./FLInstant/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - ndppf_1
+    volumes:
+      - ./FLInstant/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+      - ./Output/flclient_1:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical/
+    command: ["bash", "/app/confs/run_inference.sh", "1"]
+    networks:
+      server_client_network:
+        ipv4_address: ${INFERENCE_1_SERVER_IP}
+      dps_network:
+        ipv4_address: ${INFERENCE_1_DATASOURCE_IP}
+
+  flinference_2:
+    container_name: flinference_2
+    build:
+      context: .
+      dockerfile: ./FLInstant/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - ndppf_1
+    volumes:
+      - ./FLInstant/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+      - ./Output/flclient_2:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical/
+    command: ["bash", "/app/confs/run_inference.sh", "2"]
+    networks:
+      server_client_network:
+        ipv4_address: ${INFERENCE_2_SERVER_IP}
+      dps_network:
+        ipv4_address: ${INFERENCE_2_DATASOURCE_IP}
+
+  flinference_3:
+    container_name: flinference_3
+    build:
+      context: .
+      dockerfile: ./FLInstant/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - ndppf_1
+    volumes:
+      - ./FLInstant/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+       - ./Output/flclient_3:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical/
+    command: ["bash", "/app/confs/run_inference.sh", "3"]
+    networks:
+      server_client_network:
+        ipv4_address: ${INFERENCE_3_SERVER_IP}
+      dps_network:
+        ipv4_address: ${INFERENCE_3_DATASOURCE_IP}
+
+  # Data sources (6 instances)
+  datasource_1:
+    container_name: datasource_1
+    build: 
+      context: .
+      dockerfile: ./DATASOURCE/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flclient_1
+    volumes:
+      - ./DATASOURCE/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_datasource.sh", "1"]
+    networks:
+      dps_network:
+        ipv4_address: ${DATASOURCE_D1_IP}
+
+  datasource_2:
+    container_name: datasource_2
+    build: 
+      context: .
+      dockerfile: ./DATASOURCE/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flclient_1
+    volumes:
+      - ./DATASOURCE/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_datasource.sh", "1"]
+    networks:
+      dps_network:
+        ipv4_address: ${DATASOURCE_D2_IP}
+
+  datasource_3:
+    container_name: datasource_3
+    build: 
+      context: .
+      dockerfile: ./DATASOURCE/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flclient_2
+    volumes:
+      - ./DATASOURCE/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_datasource.sh", "1"]
+    networks:
+      dps_network:
+        ipv4_address: ${DATASOURCE_D3_IP}
+
+  datasource_4:
+    container_name: datasource_4
+    build: 
+      context: .
+      dockerfile: ./DATASOURCE/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flclient_2
+    volumes:
+      - ./DATASOURCE/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_datasource.sh", "1"]
+    networks:
+      dps_network:
+        ipv4_address: ${DATASOURCE_D4_IP}
+
+  datasource_5:
+    container_name: datasource_5
+    build: 
+      context: .
+      dockerfile: ./DATASOURCE/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flclient_3
+    volumes:
+      - ./DATASOURCE/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_datasource.sh", "1"]
+    networks:
+      dps_network:
+        ipv4_address: ${DATASOURCE_D5_IP}
+
+  datasource_6:
+    container_name: datasource_6
+    build: 
+      context: .
+      dockerfile: ./DATASOURCE/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    depends_on:
+      - flclient_3
+    volumes:
+      - ./DATASOURCE/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_datasource.sh", "1"]
+    networks:
+      dps_network:
+        ipv4_address: ${DATASOURCE_D6_IP}
+
+  # Main federated learning server
+  flserver:
+    container_name: flserver
+    build: 
+      context: .
+      dockerfile: ./FLInstant/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    volumes:
+      - ./FLInstant/config:/app/confs
+      - ./FLInstant:/in_network_federaed_learning_for_anomaly_detection/
+    command: ["bash", "/app/confs/run_server.sh"]
+    networks:
+      server_client_network:
+        ipv4_address: ${SERVER_IP}
+
+networks:
+  server_client_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "${SERVER_CLIENT_NETWORK_SUBNET}"
+
+  dps_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "${DPS_MAIN_NETWORK_SUBNET}"
+
+

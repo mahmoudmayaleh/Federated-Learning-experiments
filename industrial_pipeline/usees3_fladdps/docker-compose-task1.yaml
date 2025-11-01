@@ -1,0 +1,275 @@
+services:
+    indbf_1:
+      container_name: indbf_kafka_1
+      image: registrylab.roc.cnam.fr/goyban/fladdps/ndbf:2.13-3.9.0
+      env_file:
+        - .env
+      tty: true
+      volumes:
+        - ./NDBF/config:/app/confs
+      command: ["bash", "/app/confs/run_broker.sh", "1", "i"]
+      networks:
+        dps_1_network:
+          ipv4_address: ${KAFKA_i1_IP}
+
+    endbf_1:
+      container_name: endbf_kafka_1
+      image: registrylab.roc.cnam.fr/goyban/fladdps/ndbf:2.13-3.9.0
+      env_file:
+        - .env
+      tty: true
+      volumes:
+        - ./NDBF/config:/app/confs
+      command: ["bash", "/app/confs/run_broker.sh", "1", "e"]
+      networks:
+        dps_1_network:
+          ipv4_address: ${KAFKA_e1_IP}
+
+    ndppf_1:
+      container_name: ndppf_1
+      build: 
+        context: .
+        dockerfile: ./NDPPF/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - endbf_1
+        - indbf_1
+      volumes:
+        - ./NDPPF/config:/app/confs
+      command: ["bash", "/app/confs/run_ndppf.sh", "1"]
+      networks:
+        dps_1_network:
+          ipv4_address: ${NDPPF_1_IP}
+
+    flclient-1:
+      container_name: flclient-1
+      build: 
+        context: .
+        dockerfile: ./FLInstant/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - flserver
+        - ndppf_1
+      volumes:
+        - ./FLInstant/config:/app/confs
+        - ./Output/flclient-1:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical
+      command: ["bash", "/app/confs/run_client.sh", "1"]
+      networks:
+        server_client_network:
+          ipv4_address: ${CLIENT_1_SERVER_IP}
+        dps_1_network:
+          ipv4_address: ${CLIENT_1_DATASOURCE_IP}
+
+    flinference-1:
+      container_name: flinference-1
+      build: 
+        context: .
+        dockerfile: ./FLInstant/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - flserver
+        - ndppf_1
+      volumes:
+        - ./FLInstant/config:/app/confs
+        - ./Output/flclient-1:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical
+      command: ["bash", "/app/confs/run_inference.sh", "1"]
+      networks: 
+        server_client_network:
+          ipv4_address: ${INFERENCE_1_SERVER_IP}
+        dps_1_network:
+          ipv4_address: ${INFERENCE_1_DATASOURCE_IP}
+
+    datasource-d1-i1:
+      container_name: datasource-d1-i1
+      build: 
+        context: .
+        dockerfile: ./DATASOURCE/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - flclient-1
+      #cpus: 1
+      volumes:
+        - ./DATASOURCE/config:/app/confs
+      command: ["bash", "/app/confs/run_datasource_task1.sh", "1", "1"]
+      networks:
+        dps_1_network:
+          ipv4_address: ${DATASOURCE_D1_I1_IP}
+
+    datasource-d1-i2:
+      container_name: datasource-d1-i2
+      build: 
+        context: .
+        dockerfile: ./DATASOURCE/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - flclient-1
+      #cpus: 1
+      volumes:
+        - ./DATASOURCE/config:/app/confs
+      command: ["bash", "/app/confs/run_datasource_task1.sh", "2", "1"]
+      networks:
+        dps_1_network:
+          ipv4_address: ${DATASOURCE_D1_I2_IP}
+
+    indbf_2:
+      container_name: indbf_kafka_2
+      image: registrylab.roc.cnam.fr/goyban/fladdps/ndbf:2.13-3.9.0
+      env_file:
+        - .env
+      tty: true
+      volumes:
+        - ./NDBF/config:/app/confs
+      command: ["bash", "/app/confs/run_broker.sh", "2", "i"]
+      networks:
+        dps_2_network:
+          ipv4_address: ${KAFKA_i2_IP}
+
+    endbf_2:
+      container_name: endbf_kafka_2
+      image: registrylab.roc.cnam.fr/goyban/fladdps/ndbf:2.13-3.9.0
+      env_file:
+        - .env
+      tty: true
+      volumes:
+        - ./NDBF/config:/app/confs
+      command: ["bash", "/app/confs/run_broker.sh", "2", "e"]
+      networks:
+        dps_2_network:
+          ipv4_address: ${KAFKA_e2_IP}
+
+    ndppf_2:
+      container_name: ndppf_2
+      build: 
+        context: .
+        dockerfile: ./NDPPF/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - endbf_2
+        - indbf_2
+      volumes:
+        - ./NDPPF/config:/app/confs
+      command: ["bash", "/app/confs/run_ndppf.sh", "2"]
+      networks:
+        dps_2_network:
+          ipv4_address: ${NDPPF_2_IP}
+
+    flclient-2:
+      container_name: flclient-2
+      build: 
+        context: .
+        dockerfile: ./FLInstant/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - flserver
+        - ndppf_2
+      volumes:
+        - ./FLInstant/config:/app/confs
+        - ./Output/flclient-2:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical/
+      command: ["bash", "/app/confs/run_client.sh", "2"]
+      networks:
+        server_client_network:
+          ipv4_address: ${CLIENT_2_SERVER_IP}
+        dps_2_network:
+          ipv4_address: ${CLIENT_2_DATASOURCE_IP}
+
+    flinference-2:
+      container_name: flinference-2
+      build: 
+        context: .
+        dockerfile: ./FLInstant/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - ndppf_2
+      volumes:
+        - ./FLInstant/config:/app/confs
+        - ./Output/flclient-2:/in_network_federaed_learning_for_anomaly_detection/Output/Analysis/physical/
+      command: ["bash", "/app/confs/run_inference.sh", "2"]
+      networks:
+        server_client_network:
+          ipv4_address: ${INFERENCE_2_SERVER_IP}
+        dps_2_network:
+          ipv4_address: ${INFERENCE_2_DATASOURCE_IP}
+
+    datasource-d2-i1:
+      container_name: datasource-d2-i1
+      build: 
+        context: .
+        dockerfile: ./DATASOURCE/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - flclient-2
+      #cpus: 1
+      volumes:
+        - ./DATASOURCE/config:/app/confs
+      command: ["bash", "/app/confs/run_datasource_task1.sh", "1", "2"]
+      networks:
+        dps_2_network:
+          ipv4_address: ${DATASOURCE_D2_I1_IP}
+
+    datasource-d2-i2:
+      container_name: datasource-d2-i2
+      build: 
+        context: .
+        dockerfile: ./DATASOURCE/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      depends_on:
+        - flclient-2
+      #cpus: 1
+      volumes:
+        - ./DATASOURCE/config:/app/confs
+      command: ["bash", "/app/confs/run_datasource_task1.sh", "2", "2"]
+      networks:
+        dps_2_network:
+          ipv4_address: ${DATASOURCE_D2_I2_IP}
+
+    flserver:
+      container_name: flserver
+      build: 
+        context: .
+        dockerfile: ./FLInstant/Dockerfile
+      env_file:
+        - .env
+      tty: true
+      volumes:
+        - ./FLInstant/config:/app/confs
+      command: ["bash", "/app/confs/run_server.sh"]
+      networks:
+        server_client_network:
+          ipv4_address: ${SERVER_IP}
+
+networks:
+    server_client_network:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: "${SERVER_CLIENT_NETWORK_SUBNET}" 
+    dps_1_network:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: "${DPS_1_NETWORK_SUBNET}" 
+    dps_2_network:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: "${DPS_2_NETWORK_SUBNET}" 
