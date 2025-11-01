@@ -1,19 +1,18 @@
 # Federated Learning Experiment Suite
 
-A consolidated collection of federated learning experiments covering baseline training, heterogeneity analysis, adversarial robustness, and an industrial-grade data pipeline. The code has been refactored into self-contained modules with descriptive names so the suite can be shared as a polished portfolio project.
-
+A consolidated collection of federated learning experiments covering baseline training, heterogeneity analysis, adversarial robustness, and an industrial-grade data pipeline.
 ## Repository Layout
 
-- `baseline_federated_training/` – reference Flower implementation plus tooling to benchmark core hyperparameters.
-- `heterogeneity_strategies/` – comparison of FedAvg, FedProx, and SCAFFOLD under non-IID data splits.
-- `robust_aggregation_defenses/` – simulations of data/model poisoning attacks and robust aggregation rules.
-- `industrial_pipeline/` – containerised data ingestion and federated orchestration pipeline used for large-scale experiments.
-- `docs/` – curated PDFs summarising findings for each module.
-- `requirements/` – Python dependencies for the experimentation modules.
+- `baseline_federated_training/` â€“ reference Flower implementation plus tooling to benchmark core hyperparameters.
+- `heterogeneity_strategies/` â€“ comparison of FedAvg, FedProx, and SCAFFOLD under non-IID data splits.
+- `robust_aggregation_defenses/` â€“ simulations of data/model poisoning attacks and robust aggregation rules.
+- `industrial_pipeline/` â€“ containerized data ingestion and federated orchestration pipeline used for large-scale experiments.
+- `docs/` â€“ PDFs summarising findings for each module.
+- `requirements/` â€“ Python dependencies for the experimentation modules.
 
 ## Getting Started
 
-1. Create a Python environment (3.9–3.11 recommended).
+1. Create a Python environment (3.9â€“3.11 recommended).
 2. Install the shared experimentation dependencies:
    ```bash
    pip install -r requirements/base.txt
@@ -22,10 +21,6 @@ A consolidated collection of federated learning experiments covering baseline tr
 
 The industrial pipeline relies on Docker and Compose; refer to the scripts under `industrial_pipeline/` for service definitions and helper commands.
 
-## Naming Convention
-
-All folders, scripts, and artefacts have been renamed to highlight what each experiment demonstrates rather than the original course iteration. References to academic task numbers (TP1–TP4) were removed in favour of descriptive project titles.
-
 ## Documentation
 
-Supplementary PDFs in `docs/` capture the main observations, experiment settings, and architectural notes for quick reference. Feel free to replace them with updated reports as you extend the suite.
+Supplementary PDFs in `docs/` capture the main observations, experiment settings, and architectural notes for quick reference.
